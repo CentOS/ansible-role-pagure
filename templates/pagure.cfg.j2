@@ -1,0 +1,389 @@
+import os
+from datetime import timedelta
+
+### Set the time after which the admin session expires
+# There are two sessions on pagure, login that holds for 31 days and
+# the session defined here after which an user has to re-login.
+# This session is used when accessing all administrative parts of pagure
+# (ie: changing a project's or a user's settings)
+ADMIN_SESSION_LIFETIME = timedelta(minutes=20)
+
+# Enable tickets and docs for all repos
+ENABLE_TICKETS = True
+ENABLE_DOCS = False
+
+# Let's ensure that we permit or not admin to delete projects
+ENABLE_DEL_PROJECTS = False
+
+### Secret key for the Flask application
+SECRET_KEY='{{ pagure_secret_key }}'
+
+### url to the database server:
+DB_URL='mysql://{{ pagure_mysqldb_user }}:{{ pagure_mysqldb_pass }}@localhost/{{ pagure_mysqldb_name }}?charset=utf8'
+#DB_URL=postgres://user:pass@host/db_name
+#DB_URL = 'sqlite:////var/tmp/pagure_dev.sqlite'
+
+### The FAS group in which the admin of pagure are
+ADMIN_GROUP = ['{{ pagure_admin_group }}']
+
+### Removing the group management from pagure Webui
+# groups should be created through pagure-admin
+# and membership synced through openid at logon time
+ENABLE_GROUP_MNGT = False
+
+### Hard-coded list of global admins
+PAGURE_ADMIN_USERS = [ {% for user in pagure_admin_users -%} '{{ user }}', {% endfor %}]
+
+### Which ADMIN API acls we want to allow for pagure-admin cli
+ADMIN_API_ACLS = ['issue_comment', 'issue_create', 'issue_change_status', 'pull_request_flag', 'pull_request_comment', 'pull_request_merge', 'generate_acls_project', 'commit_flag', 'create_branch', 'create_project' ]
+
+### The email address to which the flask.log will send the errors (tracebacks)
+EMAIL_ERROR = '{{ pagure_email_error }}'
+EMAIL_SEND = True
+
+### SMTP settings
+SMTP_SERVER = 'localhost'
+SMTP_PORT = 25
+SMTP_SSL = False
+
+#Specify both for enabling SMTP with auth
+SMTP_USERNAME = ''
+SMTP_PASSWORD = ''
+
+### Information used to sent notifications
+FROM_EMAIL = 'git@centos.org'
+DOMAIN_EMAIL_NOTIFICATIONS = 'centos.org'
+SALT_EMAIL = '{{ pagure_salt_email }}'
+
+### The URL at which the project is available.
+APP_URL = 'https://{{ pagure_public_hostname }}/'
+### The URL at which the documentation of projects will be available
+## This should be in a different domain to avoid XSS issues since we want
+## to allow raw html to be displayed (different domain, ie not a sub-domain).
+DOC_APP_URL = 'https://docs.pagure.org'
+
+### The URL to use to clone git repositories.
+GIT_URL_SSH = 'ssh://git@{{ pagure_public_hostname }}/'
+GIT_URL_GIT = 'https://{{ pagure_public_hostname }}/'
+
+### Folder containing to the git repos
+GIT_FOLDER = '{{ pagure_git_rootpath}}/repositories'
+### Folder containing the clones for the remote pull-requests
+REMOTE_GIT_FOLDER = '{{ pagure_git_rootpath }}/remotes'
+### Folder containing the forks repos
+FORK_FOLDER = '{{ pagure_git_rootpath }}/repositories/forks'
+
+### Folder containing the docs repos
+DOCS_FOLDER = '{{ pagure_git_rootpath }}/repositories/docs'
+
+### Folder containing the pull-requests repos
+REQUESTS_FOLDER = '{{ pagure_git_rootpath }}/repositories/requests'
+
+### Folder containing the tickets repos
+TICKETS_FOLDER = '{{ pagure_git_rootpath }}/repositories/tickets'
+ATTACHMENTS_FOLDER = '{{ pagure_git_rootpath }}/attachments'
+
+
+### Whether to enable scanning for viruses in attachments
+VIRUS_SCAN_ATTACHMENTS = False
+
+
+
+### Configuration file for gitolite
+GITOLITE_CONFIG =  '{{ pagure_git_rootpath }}/.gitolite/conf/gitolite.conf'
+
+
+### Home folder of the gitolite user
+### Folder where to run gl-compile-conf from
+GITOLITE_HOME = '{{ pagure_git_rootpath }}'
+
+### Version of gitolite used: 2 or 3?
+GITOLITE_VERSION = 3
+
+### Folder containing all the public ssh keys for gitolite
+GITOLITE_KEYDIR = '{{ pagure_git_rootpath }}/.gitolite/keydir/'
+
+### Path to the gitolite.rc file
+GL_RC = '{{ pagure_git_rootpath }}/.gitolite.rc'
+
+### Path to the /bin directory where the gitolite tools can be found
+GL_BINDIR = None
+
+### For pagure-centos custom gitolite backend
+#GITOLITE_BACKEND = 'distgit'
+GIT_AUTH_BACKEND = 'distgit'
+
+# Which namespaces are checked by aclchecker for some rules
+ACL_PROTECTED_NAMESPACES = ['rpms', 'modules', 'container']
+
+# Specific override to allow some special needed characters in projects
+PROJECT_NAME_REGEX = '^[a-zA-z0-9_][a-zA-Z0-9-_\.+]*$'
+
+# Following list are used to compute to which branches some SIGs can automatically push
+# for example branch = c7 and SIG = sig-core, so automatic ACL => c7-sig-core*
+SIG_PREFIXES = [{% for prefix in pagure_sig_prefixes -%} '{{ prefix }}', {% endfor %}]
+SUPPORTED_SIGS = [{% for sig in pagure_supported_sigs -%} '{{ sig }}', {% endfor %}]
+
+# Branches to which *nobody* will be able to push (basically Fedora)
+BLACKLIST_RES = [{% for bl in pagure_blacklist_branches -%} '{{ bl }}', {% endfor %}]
+
+### Specific ACO group that will have access to all protected branches with RWC rights
+RCM_GROUP = '{{ pagure_rcm_group }}'
+RCM_BRANCHES = [{% for branch in pagure_rcm_branches -%} '{{ branch }}', {% endfor %}]
+
+# This option will allow the ignore_existing_repos parameter when create a repo through pagure API
+# Needed when we'll want to create a repo for CentOS that already exist in Fedora / Repospanner cluster
+ALLOW_ADMIN_IGNORE_EXISTING_REPOS = True
+
+# The following users, while non admin in pagure, can still create project in specific repospanner region
+USERS_IGNORE_EXISTING_REPOS = [{% for user in pagure_rcm_users -%} '{{ user }}', {% endfor %}]
+
+# SSH Information
+
+### The ssh certificates of the git server to be provided to the user
+### /!\ format is important
+# SSH_KEYS = {'RSA': {'fingerprint': '<foo>', 'pubkey': '<bar>'}}
+SSH_KEYS = {
+  'ECDSA': {'fingerprint md5': '{{ ansible_local.sshd_host.fingerprint.ecdsa_md5 }}', 'fingerprint': '{{ ansible_local.sshd_host.fingerprint.ecdsa }}', 'pubkey': '{{ ansible_ssh_host_key_ecdsa_public }}' },
+  'RSA': {'fingerprint md5': '{{ ansible_local.sshd_host.fingerprint.rsa_md5 }}', 'fingerprint': '{{ ansible_local.sshd_host.fingerprint.rsa }}', 'pubkey': '{{ ansible_ssh_host_key_rsa_public }}' }
+}
+
+
+# Optional configuration
+
+### Number of items displayed per page
+# Used when listing items
+ITEM_PER_PAGE = 50
+
+### Maximum size of the uploaded content
+# Used to limit the size of file attached to a ticket for example
+MAX_CONTENT_LENGTH = 4 * 1024 * 1024  # 4 megabytes
+
+### Lenght for short commits ids or file hex
+SHORT_LENGTH = 6
+
+### List of blacklisted project names that can conflicts for pagure's URLs
+### or other
+BLACKLISTED_PROJECTS = [
+    'static', 'pv', 'releases', 'new', 'api', 'settings',
+    'logout', 'login', 'users', 'groups', 'projects']
+
+### IP addresses allowed to access the internal endpoints
+### These endpoints are used by the milter and are security sensitive, thus
+### the IP filter
+IP_ALLOWED_INTERNAL = ['127.0.0.1', 'localhost', '::1', {% for ip in ansible_all_ipv4_addresses -%} '{{ ip }}', {% endfor %} {% for ip in ansible_all_ipv6_addresses -%} '{{ ip }}', {% endfor %}]
+
+### EventSource/Web-Hook/Redis configuration
+# The eventsource integration is what allows pagure to refresh the content
+# on your page when someone else comments on the ticket (and this without
+# asking you to reload the page.
+# By default it is off, ie: EVENTSOURCE_SOURCE is None, to turn it on, specify
+# here what the URL of the eventsource server is, for example:
+# https://ev.pagure.io or https://pagure.io:8080 or whatever you are using
+# (Note: the urls sent to it start with a '/' so no need to add one yourself)
+EVENTSOURCE_SOURCE = None
+# Port where the event source server is running (maybe be the same port
+# as the one specified in EVENTSOURCE_SOURCE or a different one if you
+# have something running in front of the server such as apache or stunnel).
+EVENTSOURCE_PORT = 8080
+# If this port is specified, the event source server will run another server
+# at this port and will provide information about the number of active
+# connections running on the first (main) event source server
+#EV_STATS_PORT = 8888
+# Web-hook can be turned on or off allowing using them for notifications, or
+# not.
+WEBHOOK = False
+
+### Redis configuration
+# A redis server is required for both the Event-Source server or the web-hook
+# server.
+REDIS_HOST = '0.0.0.0'
+REDIS_PORT = 6379
+REDIS_DB = 0
+
+# Authentication related configuration option
+
+### Switch the authentication method
+# Specify which authentication method to use, defaults to `fas` can be or
+# `local`
+# Default: ``fas``.
+PAGURE_AUTH = 'openid'
+FAS_OPENID_ENDPOINT = "{{ pagure_openid_endpoint }}"
+
+# When this is set to True, the session cookie will only be returned to the
+# server via ssl (https). If you connect to the server via plain http, the
+# cookie will not be sent. This prevents sniffing of the cookie contents.
+# This may be set to False when testing your application but should always
+# be set to True in production.
+# Default: ``True``.
+SESSION_COOKIE_SECURE = True
+
+# The name of the cookie used to store the session id.
+# Default: ``.pagure``.
+SESSION_COOKIE_NAME = 'pagure'
+
+# Boolean specifying whether to check the user's IP address when retrieving
+# its session. This make things more secure (thus is on by default) but
+# under certain setup it might not work (for example is there are proxies
+# in front of the application).
+CHECK_SESSION_IP = True
+
+# Used by SESSION_COOKIE_PATH
+APPLICATION_ROOT = '/'
+
+# Allow the backward compatiblity endpoints for the old URLs schema to
+# see the commits of a repo. This is only interesting if you pagure instance
+# was running since before version 1.3 and if you care about backward
+# compatibility in your URLs.
+OLD_VIEW_COMMIT_ENABLED = False
+
+# Disable notifications
+FEDMSG_NOTIFICATIONS = False
+
+# List of namespaces in which we can create git repos
+ALLOWED_PREFIX = ['rpms', 'sig-core']
+
+# List of groups for which pagure will not check rights when logging in
+EXCLUDE_GROUP_INDEX = ['git-admins']
+
+# Enabling private repositories
+PRIVATE_PROJECTS = True
+
+# Custom CentOS theme
+THEME = 'centos'
+
+{% if pagure_repospanner_cluster %}
+# Included only if repospanner is enabled
+# repoSpanner integration settings
+# Whether to create new repositories on repoSpanner by default.
+# Either None or a region name.
+# Worth noting that only pagure admin can override that on creation
+REPOSPANNER_NEW_REPO = 'namespace_rpms'
+# Whether to allow admins to override region selection on creation.
+REPOSPANNER_NEW_REPO_ADMIN_OVERRIDE = True
+# Whether to create new forks on repoSpanner.
+# Either None (no repoSpanner), True (same as origin project) or a region name.
+REPOSPANNER_NEW_FORK = True
+# # Whether to allow an admin to manually migrate an individual project.
+REPOSPANNER_ADMIN_MIGRATION = True
+
+REPOSPANNER_REGIONS = {
+{% for instance in repospanner_instances %}
+'{{ instance.name }}': {'url': 'https://{{ instance.my_cn }}:{{ instance.http_port }}',
+			'repo_prefix': 'pagure/',
+			{% if ansible_local.pagure is defined %} 
+			'hook': '{{ ansible_local.pagure.repospanner.hook_id }}',
+			{% else %}
+			'hook': None, 	
+			{% endif %}
+			'ca': '/etc/pki/repospanner/{{ instance.name }}/{{ instance.tls_ca_cert }}',
+			'admin_cert': {'cert': '/etc/pki/repospanner/{{ instance.name }}/{{ instance.admin_cert }}',
+					'key': '/etc/pki/repospanner/{{ instance.name }}/{{ instance.admin_key }}'},
+			'push_cert': {'cert': '/etc/pki/repospanner/{{ instance.name }}/{{ instance.push_cert }}',
+					'key': '/etc/pki/repospanner/{{ instance.name }}/{{ instance.push_key }}'},
+		       },
+{% endfor %}
+}
+
+REPOSPANNER_PSEUDO_FOLDER = '{{ pagure_git_rootpath }}/repositories/pseudo'
+# Using repospanner to check ACLs, bypassing gitolite
+SSH_KEYS_USERNAME_LOOKUP = False
+SSH_KEYS_USERNAME_EXPECT = 'git'
+SSH_KEYS_OPTIONS = 'restrict,command="/usr/libexec/pagure/aclchecker.py %(username)s"'
+
+{% if pagure_repospanner_acl_debug %}
+# Turning the debug mode for ACL checker
+ACL_DEBUG = True
+{% endif %}
+
+# ACL Checker options
+SSH_COMMAND_REPOSPANNER = ([
+    "/usr/libexec/repobridge",
+    "--extra", "username", "%(username)s",
+    "--extra", "repotype", "%(repotype)s",
+    "--extra", "project_name", "%(project_name)s",
+    "--extra", "project_user", "%(project_user)s",
+    "--extra", "project_namespace", "%(project_namespace)s",
+    "%(cmd)s",
+    "'pagure/%(repotype)s/%(reponame)s'",
+], {"REPOBRIDGE_CONFIG": "/etc/repospanner/bridge_%(region)s.json"})
+
+SSH_COMMAND_NON_REPOSPANNER = ([
+    "%(cmd)s",
+    "%(repopath)s",
+], {"GL_USER": "%(username)s"})
+
+HTTP_REPO_ACCESS_GITOLITE = None
+
+# End of repospanner settings
+{% endif %}
+
+# Logging features
+from pagure.mail_logging import ContextInjector, MSG_FORMAT
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+        'email_format': {
+            'format': MSG_FORMAT
+        }
+    },
+    'filters': {
+        'myfilter': {
+            '()': ContextInjector,
+        }
+    },
+    'handlers': {
+        'console': {
+            'formatter': 'standard',
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://sys.stderr',
+        },
+        'email': {
+            'level': 'ERROR',
+            'formatter': 'email_format',
+            'class': 'logging.handlers.SMTPHandler',
+            'mailhost': 'localhost',
+            'fromaddr': 'git@centos.org',
+            'toaddrs': '{{ pagure_email_error }}',
+            'subject': 'Pagure ERROR on {{ inventory_hostname }}',
+            'filters': ['myfilter'],
+        },
+    },
+    # The root logger configuration; this is a catch-all configuration
+    # that applies to all log messages not handled by a different logger
+    'root': {
+        'level': 'ERROR',
+        'handlers': ['console'],
+    },
+    'loggers': {
+        'pagure': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True
+        },
+        'flask': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False
+        },
+        'sqlalchemy': {
+            'handlers': ['console'],
+            'level': 'WARN',
+            'propagate': False
+        },
+        'binaryornot': {
+            'handlers': ['console'],
+            'level': 'WARN',
+            'propagate': True
+        },
+        'pagure.lib.encoding_utils': {
+            'handlers': ['console'],
+            'level': 'WARN',
+            'propagate': False
+        },
+    }
+}

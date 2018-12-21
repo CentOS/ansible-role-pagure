@@ -1,0 +1,16 @@
+[lookaside]
+cache_dir = {{ lookaside_rootpath }}/lookaside
+
+[acls]
+do_acl = yes
+fas_url = {{ lookaside_fas_url }}
+fas_username = {{ lookaside_fas_user }}
+fas_password = {{ lookaside_fas_pass }}
+push_superadmin_group = {{ pagure_rcm_group }}
+
+[mail]
+send_mail = no
+sender_name = CentOS source uploads
+sender_email = nobody@centos.org
+recipient = centos-build-reports@centos.org
+smtp_server = localhost

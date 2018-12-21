@@ -1,0 +1,12 @@
+[fedora-infra]
+name=Fedora Infra
+baseurl=https://kojipkgs.fedoraproject.org/repos-dist/epel7-infra/latest/x86_64
+enabled=1
+gpgcheck=0
+
+[fedora-infra-stg]
+name=Fedora Infra stg
+baseurl=https://kojipkgs.fedoraproject.org/repos-dist/epel7-infra-stg/latest/x86_64
+enabled=1
+gpgcheck=0
+

@@ -1,0 +1,18 @@
+---
+
+- include_role:
+    name: mysql
+
+- name: Setting up MySQL DB for pagure
+  mysql_db:
+    db: "{{ pagure_mysqldb_name }}"
+    state: present
+ 
+- name: Granting mysql db right for pagure
+  mysql_user:
+    name: "{{ pagure_mysqldb_user }}"
+    password: "{{ pagure_mysqldb_pass }}"
+    priv: "{{ pagure_mysqldb_name }}.*:ALL"
+    state: present
+
+

@@ -1,0 +1,37 @@
+
+- name: Distributing tool to trigger repo hook id
+  template:
+    src: "{{ item }}.j2"
+    dest: "/usr/libexec/{{ item }}"
+    mode: 0750
+    owner: root
+    group: root
+  with_items:
+    - repohookfinder
+    - primecache.py
+
+- name: Populating repospanner hook id as ansible fact
+  command: /usr/libexec/repohookfinder
+  register: hookid
+  changed_when: "'changed' in hookid.stdout"
+
+- name: Forcing reloading ansible facts if needed
+  setup:
+    filter: ansible_local
+  when: hookid is changed
+
+- name: Configuring pagure application
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/pagure/{{ item }}"
+    owner: git 
+    backup: True
+  with_items:
+    - pagure.cfg
+  when: hookid is changed  
+  notify:
+   - restart_pagure_workers
+
+- name: Ensuring hook id is reflected in existing repositories
+  command: "pagure-admin ensure-project-hooks {{ ansible_local.pagure.repospanner.hook_id }}"
+  when: hookid is changed

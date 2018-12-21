@@ -1,0 +1,8 @@
+Alias /sources {{ lookaside_dir }}
+Alias /repo             {{ lookaside_dir }}
+<Directory {{ lookaside_dir }} >
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
+</Directory>
+

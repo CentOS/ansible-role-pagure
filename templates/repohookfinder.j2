@@ -1,0 +1,17 @@
+#!/bin/bash
+fact_file="/etc/ansible/facts.d/pagure.fact"
+current_hook_id=$(grep hook_id ${fact_file} 2>/dev/null |cut -f 2 -d '=')
+{% for instance in repospanner_instances %}
+hook_id=$(pagure-admin upload-repospanner-hook {{ instance.name }}|egrep -v "Using configuration|pagure.lib"|cut -f 2 -d ':'|tr -d [:blank:])
+{% endfor %}
+if [ "$current_hook_id" == "$hook_id" ] ; then
+  echo up2date
+  exit 0
+else
+cat > ${fact_file} << EOF
+[repospanner]
+hook_id=${hook_id}
+EOF
+  echo changed
+fi
+

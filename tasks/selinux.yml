@@ -1,0 +1,29 @@
+---
+- name: Enabling selinux booleans
+  seboolean:
+    name: "{{ item }}"
+    persistent: yes
+    state: yes
+  with_items:
+    - httpd_execmem
+    - httpd_can_network_connect
+    - nis_enabled
+ 
+- name: Distributing custom selinux policy
+  copy:
+    src: "selinux/{{ item }}"
+    dest: "/etc/selinux/centos/{{ item }}"
+  with_items:
+    - pagure.pp
+    - pagure-lookaside.pp
+  register: sepolicy  
+  tags:
+    - selinux
+
+- name: Reloading selinux polic on change
+  shell: "/usr/sbin/semodule -u /etc/selinux/centos/{{ item.item }}"
+  with_items: "{{ sepolicy.results }}"
+  when: item.changed
+  no_log: True
+  tags:
+    - selinux

@@ -1,0 +1,13 @@
+
+module pagure-lookaside 1.0;
+
+require {
+	type git_user_content_t;
+	type git_script_t;
+	class dir { add_name create remove_name write };
+	class file { create rename setattr write };
+}
+
+#============= git_script_t ==============
+allow git_script_t git_user_content_t:dir { add_name create remove_name write };
+allow git_script_t git_user_content_t:file { create rename setattr write };

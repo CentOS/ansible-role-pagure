@@ -1,0 +1,15 @@
+---
+# handlers file for pagure
+
+- name: restart_pagure_workers
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - httpd
+    - pagure_worker
+    - pagure_gitolite_worker
+    - pagure_ev
+    - pagure_webhook
+    - pagure_loadjson
+    - pagure_mirror

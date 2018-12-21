@@ -1,0 +1,20 @@
+[dist-git]
+git_author_name  = CentOS Sources
+git_author_email = bugs@centos.org
+
+cache_dir      = /srv/cache
+gitroot_dir    = /var/lib/dist-git/git
+
+# deprecated:
+# cache_dir_override = /var/lib/dist-git/cache/lookaside/pkgs
+
+gitolite       = True
+grok           = True
+
+default_namespace = rpms
+
+[upload]
+fedmsgs    = True
+old_paths  = True
+nomd5      = True
+disable_group_check = False

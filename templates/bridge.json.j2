@@ -1,0 +1,11 @@
+{
+    "ca": "/etc/pki/repospanner/{{ item.name }}/{{ item.tls_ca_cert }}",
+    "baseurl": "https://{{ item.my_cn }}:{{ item.http_port }}",
+    "certs": {
+        "_default_": {
+            "cert": "/etc/pki/repospanner/{{ item.name }}/{{ item.push_cert }}",
+            "key": "/etc/pki/repospanner/{{ item.name }}/{{ item.push_key }}"
+        }
+    }
+}
+

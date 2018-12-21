@@ -1,0 +1,94 @@
+<VirtualHost *:443>
+ ServerAdmin webmaster@centos.org
+ ServerName {{ pagure_public_hostname }}
+ DocumentRoot /var/www/html
+
+
+  Header always set Strict-Transport-Security "max-age=31536000"
+
+# Needed specific rules to let people from gitblit still allowed to git clone/pull on specific old URI
+RewriteEngine on
+RewriteRule ^/r/(.*)/info/refs /$1/info/refs [PT]
+RewriteRule ^/r/(.*)/git-upload-pack /$1/git-upload-pack [PT]
+RewriteRule ^/r/(.*)/git-receive-pack /$1/git-receive-pack [PT]
+
+RewriteRule ^/git/(.*)/info/refs /$1/info/refs [PT]
+RewriteRule ^/git/(.*)/git-upload-pack /$1/git-upload-pack [PT]
+RewriteRule ^/git/(.*)/git-receive-pack /$1/git-receive-pack [PT]
+
+
+ErrorLog logs/{{ pagure_public_hostname }}_error.log
+TransferLog logs/{{ pagure_public_hostname }}_access.log
+LogLevel warn
+SSLEngine on
+SSLProtocol all -SSLv2 -SSLv3
+SSLHonorCipherOrder on
+SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW:!aNULL:!eNULL:!DES:!MD5:!PSK:!RC4
+SSLCertificateFile /etc/pki/tls/certs/{{ pagure_public_hostname }}.crt
+SSLCertificateKeyFile /etc/pki/tls/private/{{ pagure_public_hostname }}.key
+SSLCertificateChainFile /etc/pki/tls/certs/{{ pagure_public_hostname }}-CAChain.crt
+
+SSLCACertificateFile /etc/pki/tls/certs/{{ lookaside_fas_ca_crt }}
+SSLVerifyClient optional 
+SSLOptions +OptRenegotiate
+
+ScriptAlias /sources/upload.cgi /var/www/cgi-bin/upload.cgi
+
+Alias /sources/ {{ lookaside_rootpath }}/lookaside/
+Alias /sources {{ lookaside_rootpath }}/lookaside/
+
+<Directory "{{ lookaside_rootpath }}/lookaside/">
+  HeaderName /header/header.html
+  AllowOverride Indexes
+  Options Indexes FollowSymLinks
+  <IfVersion < 2.4>
+    Order allow,deny
+    Allow from all
+  </IfVersion>
+  <IfVersion >= 2.4>
+    IndexOptions FancyIndexing VersionSort NameWidth=* HTMLTable Charset=UTF-8
+    Require all granted
+  </IfVersion>
+</Directory>
+
+<Directory /sources/>
+    SSLVerifyClient optional
+    SSLVerifyDepth 1
+    SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
+    # require that the client auth cert was created by us and signed by us
+    SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
+                and %{SSL_CLIENT_S_DN_O} eq "The CentOS Project" \
+                and %{SSL_CLIENT_S_DN_OU} eq "CentOS User Cert" \
+                and %{SSL_CLIENT_I_DN_O} eq "The CentOS Project")
+</Directory>
+
+<Location /sources/upload.cgi>
+    SSLRequireSSL
+
+    Options +ExecCGI
+    Require all granted
+
+    SSLVerifyClient optional
+    SSLVerifyDepth 1
+    SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
+    # require that the access comes from internal or that
+    # the client auth cert was created by us and signed by us
+    SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
+                and %{SSL_CLIENT_S_DN_O} eq "The CentOS Project" \
+                and %{SSL_CLIENT_S_DN_OU} eq "CentOS User Cert" \
+                and %{SSL_CLIENT_I_DN_O} eq "The CentOS Project")
+</Location>
+
+
+<Files ~ "\.(cgi|shtml|phtml|php3?)$">
+    SSLOptions +StdEnvVars
+</Files>
+<Directory "/var/www/cgi-bin">
+    SSLOptions +StdEnvVars
+</Directory>
+SetEnvIf User-Agent ".*MSIE.*" \
+         nokeepalive ssl-unclean-shutdown \
+         downgrade-1.0 force-response-1.0
+CustomLog logs/ssl-{{ pagure_public_hostname }}_request.log \
+          "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+</VirtualHost>         

@@ -1,0 +1,145 @@
+---
+- name: Adding our pagure repo 
+  template:
+    src: CentOS-pagure.repo.j2
+    dest: /etc/yum.repos.d/CentOS-pagure.repo
+
+- name: Installing required pkgs for pagure
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - pagure
+    - pagure-milters
+    - pagure-ev
+    - pagure-webhook
+    - pagure-loadjson
+    - pagure-logcom
+    - pagure-mirror
+    - python2-pygments2
+    - MySQL-python
+    - python-flask-openid
+    - python2-fedora-flask
+    - redis
+    - python-redis
+    - python-trollius-redis
+    - python-trollius
+    - python-pagure-dist-git
+    - mailx
+
+- include_tasks: mysql.yml
+  tags: 
+    - mysql
+- include_tasks: httpd.yml
+  tags:
+    - httpd
+- include_tasks: gitolite.yml
+  tags:
+    - gitolite
+
+- import_tasks: selinux.yml
+
+- include_tasks: repospanner.yml
+  when: pagure_repospanner_cluster  
+
+- include_role:
+    name: postfix
+    tasks_from: relay_to
+
+- name: Ensuring directory structure is there for git repositories
+  file:
+    state: directory
+    owner: git
+    group: git
+    path: "{{ pagure_git_rootpath }}/repositories/{{ item }}"
+    setype: gitosis_var_lib_t
+  with_items:
+    - docs
+    - forks
+    - tickets
+    - requests
+    - remotes
+
+- name: Ensuring specific namespaces exist in pagure
+  file:
+    state: directory
+    owner: git
+    group: git
+    path: "{{ pagure_git_rootpath }}/repositories/{{ item }}"
+    setype: gitosis_var_lib_t
+  with_items: "{{ pagure_namespaces }}"
+
+- name: Ensuring directory structure is there for attachments
+  file:
+    state: directory
+    owner: git
+    group: git
+    path: "{{ pagure_git_rootpath }}/attachments"
+    setype: gitosis_var_lib_t
+
+- name: Ensuring httpd can read git repositories
+  acl:
+    entity: apache
+    etype: user
+    path: "{{ pagure_git_rootpath }}"
+    permissions: rx
+    #recursive: yes
+    state: present
+
+- name: Ensuring httpd user will be granted rights on new created repositories
+  acl:
+    default: yes
+    entity: apache
+    etype: user
+    path: "{{ pagure_git_rootpath }}"
+    permissions: rx
+    #recursive: yes
+    state: present
+
+- name: Configuring pagure application
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/pagure/{{ item }}"
+    owner: git 
+    backup: True
+  with_items:
+    - pagure.cfg
+    - alembic.ini
+  notify:
+   - restart_pagure_workers
+  tags:
+    - config
+
+- name: Running alembic upgrade for existing install
+  command: alembic --config /etc/pagure/alembic.ini upgrade head
+  args:
+    removes: /etc/pagure/initdb.done
+
+- name: Init pagure DB
+  shell: python /usr/share/pagure/pagure_createdb.py -c /etc/pagure/pagure.cfg -i /etc/pagure/alembic.ini ; touch /etc/pagure/initdb.done
+
+- name: Deploying pagure CentOS theme
+  unarchive:
+    src: pagure-theme-centos.tar.gz
+    dest: /
+  tags:
+    - theme
+
+- name: Ensuring some services are started and enabled
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: True
+  with_items:
+    - httpd
+    - redis
+    - pagure_ev
+    - pagure_gitolite_worker
+    - pagure_worker
+    - pagure_loadjson
+    - pagure_logcom
+    - pagure_mirror
+    
+- include_tasks: repospanner-hook.yml
+  when: pagure_repospanner_cluster  
+

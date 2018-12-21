@@ -1,0 +1,17 @@
+- include_role:
+    name: repospanner
+ 
+- name: PSEUDO dir for repospanner
+  file:
+    path: "{{ pagure_git_rootpath }}/repositories/pseudo"
+    state: directory
+    owner: git
+    group: git
+
+- name: Distributing repospanner bridge config files
+  template:
+    src: bridge.json.j2
+    dest: "/etc/repospanner/bridge_{{ item.name }}.json"
+  with_items:
+    "{{ repospanner_instances }}"
+

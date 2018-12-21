@@ -1,0 +1,19 @@
+<VirtualHost *:80>
+  ServerName {{ pagure_public_hostname }}
+  CustomLog logs/{{ pagure_public_hostname }}_access.log combined
+  ErrorLog logs/{{ pagure_public_hostname }}_error.log
+  DocumentRoot /var/www/git
+
+   RewriteEngine On
+   RewriteCond $1 !^.well-known
+   RewriteCond %{HTTPS} !=on
+   RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+
+<Location "/.well-known/acme-challenge/">
+    ProxyPass "http://cephas.centos.org/.well-known/acme-challenge/"
+</Location>
+
+
+
+</VirtualHost>
+

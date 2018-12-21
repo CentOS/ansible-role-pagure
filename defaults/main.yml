@@ -1,0 +1,76 @@
+---
+# defaults file for pagure application
+pagure_mysqldb_name: pagure
+pagure_mysqldb_user: pagure
+pagure_mysqldb_pass: fqemfzqfjmqzeifjmzoeimzqefzq
+ 
+pagure_secret_key: 'tfeqzfqezfmmjqefmoqzejfmoqzefqze'
+pagure_salt_email: 'frhimiipwearewojpfeadmacmoeoezqe'
+
+# Default path for git/gitolite user home dir, holding all the structure for git repositories
+pagure_git_rootpath: /srv/git
+
+# Which openid endpoint to use for auth
+pagure_openid_endpoint: https://id.stg.centos.org/idp/openid/
+
+# List of user with admin rights in pagure (not coming from any group)
+pagure_admin_users:
+  - root
+pagure_admin_group: git-admins
+
+# List of namespaces to be created in pagure
+pagure_namespaces:
+  - rpms
+  - sig-core
+
+# Hard-code email address to send pagure errors to  
+pagure_email_error: you@yourdomain.com
+
+# For automatically computed ACLs for aclchecker (sig_prefixes + supported_sigs)
+pagure_sig_prefixes:
+  - refs/heads/c6
+  - refs/heads/c7
+pagure_supported_sigs:
+  - sig-core
+  - sig-cloud
+
+# Branches that RCM group can push to (regex)
+pagure_rcm_branches:
+  - refs/heads/c[0-9]+.*
+  - refs/tags/.*
+
+# Branches that nobody can push to (regex)
+pagure_blacklist_branches:
+  - refs/heads/f[0-9]+.*
+  - refs/heads/epel[0-9]+.*
+  - refs/heads/el[0-9]+.*
+  - refs/heads/olpc[0-9]+.*
+  - refs/heads/master
+
+# Group with specific ACLs for aclchecker
+pagure_rcm_group: yourgroup
+# Specifi list of users who, without being admin, can create a repo in pagure
+# and still select which repospanner region to create the repo into
+pagure_rcm_users:
+  - youruser
+
+# Lookaside specific variables
+lookaside_rootpath: /srv/cache
+lookaside_fas_user: youruser
+lookaside_fas_pass: yourpass
+lookaside_fas_url: https://fas.url
+lookaside_fas_ca_crt: fas_ca_cert-prod.crt
+# which specific rcm user can push through ssh instead of upload.cgi/tls auth
+lookaside_ssh_users:
+  - login_name: pushuser
+    full_name: CentOS Sources push user
+    ssh_pub_key:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6++6IePs4kw0nCnW5HmvEDeP3LKvBjy3WMYnPpYoJP9xWnZJCc9snPGUq0n/iwR3cCXuiUOf882QewMDyNR/T10MdcyRar6ImBqUIKXK1xGqgrrzrDCwCEITXSmQgk0BnWPDSNn7IKvPDulzx+1pbwa1jh1XA4Px3Yf/4Lko9aP/9w/VBMNTVegCmcgCxGpTFlpWKDSHmTatZNK6nHWdOwprt0SJOb9EKLM7MxunTx3vyT9jB6dkNKM4rxU5b4rmvaJ8ctTqrfu9KdDy8bjZhTy+mIcFujgfFNqZeHAOdJ6gl946r6Mb/6jZA0KvZDs3kJ/9ZSZCcWDzTqargu59H"
+
+
+# Do we want repospanner integration
+pagure_repospanner_cluster: False
+pagure_repospanner_acl_debug: False
+
+# If we want repospanner integration, we need the instances details
+# see repospanner defaults
