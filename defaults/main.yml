@@ -74,3 +74,13 @@ pagure_repospanner_acl_debug: False
 
 # If we want repospanner integration, we need the instances details
 # see repospanner defaults
+
+# Zabbix templates/groups (monitoring)
+zabbix_pagure_templates:
+  - Template CentOS MySQL
+  - Template CentOS http server
+  - Template CentOS - https SSL Cert Check External
+zabbix_pagure_groups:
+  - CentOS Pagure hosts
+  - CentOS HTTP servers
+  - CentOS HTTPS servers

@@ -36,7 +36,9 @@
 - include_tasks: gitolite.yml
   tags:
     - gitolite
-
+- include_tasks: monitoring.yml
+  tags:
+    - monitoring
 - import_tasks: selinux.yml
 
 - include_tasks: repospanner.yml
