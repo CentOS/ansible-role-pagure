@@ -24,7 +24,7 @@
     - python-redis
     - python-trollius-redis
     - python-trollius
-    - python-pagure-dist-git
+    - pagure-dist-git
     - mailx
 
 - include_tasks: mysql.yml
@@ -36,9 +36,6 @@
 - include_tasks: gitolite.yml
   tags:
     - gitolite
-- include_tasks: monitoring.yml
-  tags:
-    - monitoring
 - import_tasks: selinux.yml
 
 - include_tasks: repospanner.yml
@@ -127,6 +124,9 @@
   tags:
     - theme
 
+- include_tasks: mqtt.yml
+  when: pagure_mqtt
+
 - name: Ensuring some services are started and enabled
   service:
     name: "{{ item }}"
@@ -145,3 +145,7 @@
 - include_tasks: repospanner-hook.yml
   when: pagure_repospanner_cluster  
 
+- include_tasks: monitoring.yml
+  tags:
+    - monitoring
+-

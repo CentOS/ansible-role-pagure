@@ -240,6 +240,22 @@ OLD_VIEW_COMMIT_ENABLED = False
 # Disable notifications
 FEDMSG_NOTIFICATIONS = False
 
+{% if pagure_mqtt %}
+# MQTT settings
+MQTT_NOTIFICATIONS = True 
+MQTT_HOST = '{{ pagure_mqtt_host }}' 
+MQTT_PORT = '{{ pagure_mqtt_port }}'
+MQTT_TOPIC_PREFIX = '{{ pagure_mqtt_topic }}'
+MQTT_CA_CERTS = '/etc/pagure/{{ pagure_mqtt_tls_cacert }}'
+MQTT_CERTFILE = '/etc/pagure/{{ pagure_mqtt_tls_cert }}'
+MQTT_KEYFILE = '/etc/pagure/{{ pagure_mqtt_tls_key }}'
+ALWAYS_MQTT_ON_COMMITS = True
+# To be removed when https://pagure.io/pagure/pull-request/4281 will be merged
+MQTT_TLS_VERSION = 5  
+MQTT_CERT_REQS = 2
+
+{% endif %}
+
 # List of namespaces in which we can create git repos
 ALLOWED_PREFIX = ['rpms', 'sig-core']
 

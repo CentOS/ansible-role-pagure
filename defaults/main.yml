@@ -67,6 +67,16 @@ lookaside_ssh_users:
     ssh_pub_key:
       - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6++6IePs4kw0nCnW5HmvEDeP3LKvBjy3WMYnPpYoJP9xWnZJCc9snPGUq0n/iwR3cCXuiUOf882QewMDyNR/T10MdcyRar6ImBqUIKXK1xGqgrrzrDCwCEITXSmQgk0BnWPDSNn7IKvPDulzx+1pbwa1jh1XA4Px3Yf/4Lko9aP/9w/VBMNTVegCmcgCxGpTFlpWKDSHmTatZNK6nHWdOwprt0SJOb9EKLM7MxunTx3vyT9jB6dkNKM4rxU5b4rmvaJ8ctTqrfu9KdDy8bjZhTy+mIcFujgfFNqZeHAOdJ6gl946r6Mb/6jZA0KvZDs3kJ/9ZSZCcWDzTqargu59H"
 
+# Do want to also push notifications to mqtt ?
+pagure_mqtt: False
+pagure_mqtt_host: broker.dev.centos.org #mqtt broker to push to
+pagure_mqtt_port: 8883
+pagure_mqtt_topic: pagure
+pagure_mqtt_user:
+pagure_mqtt_pass:
+pagure_mqtt_tls_cacert:
+pagure_mqtt_tls_cert:
+pagure_mqtt_tls_key:
 
 # Do we want repospanner integration
 pagure_repospanner_cluster: False

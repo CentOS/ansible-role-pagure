@@ -1,0 +1,13 @@
+- name: Ensuring we have correct python pkg for mqtt
+  yum:
+    name: python-paho-mqtt
+    state: latest
+
+- name: Distributing needed TLS files for MQTT notifications
+  copy:
+    src: "{{ pkistore }}/{{ item }}"
+    dest: "/etc/pagure/{{ item }}"
+  with_items:
+    - "{{ pagure_mqtt_tls_cacert }}"
+    - "{{ pagure_mqtt_tls_cert }}"
+    - "{{ pagure_mqtt_tls_key }}"
