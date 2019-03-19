@@ -257,7 +257,7 @@ MQTT_CERT_REQS = 2
 {% endif %}
 
 # List of namespaces in which we can create git repos
-ALLOWED_PREFIX = ['rpms', 'sig-core']
+ALLOWED_PREFIX = [ {% for namespace in pagure_namespaces -%} '{{ namespace }}', {% endfor %}]
 
 # List of groups for which pagure will not check rights when logging in
 EXCLUDE_GROUP_INDEX = ['git-admins']
