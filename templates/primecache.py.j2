@@ -14,7 +14,7 @@ os.environ["PAGURE_CONFIG"] = "/etc/pagure/pagure.cfg"
 import pygit2
 
 from pagure.config import config as pagure_config
-from pagure.lib import create_session, REPOTYPES
+from pagure.lib.query import create_session, get_repotypes
 from pagure.lib.model import Project
 
 
@@ -84,7 +84,7 @@ def prime_cache(project):
 
     pseudopath = pagure_config["REPOSPANNER_PSEUDO_FOLDER"]
 
-    for repotype in REPOTYPES:
+    for repotype in get_repotypes():
         logging.info("Pulling repotype %s", repotype)
         currentdir = project.repopath(repotype)
         if currentdir is None:
