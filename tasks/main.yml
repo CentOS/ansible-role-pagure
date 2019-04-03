@@ -150,4 +150,19 @@
 - include_tasks: monitoring.yml
   tags:
     - monitoring
--
+
+- name: Script for pagure groups to be created
+  template:
+    src: pagure-create-groups.j2
+    dest: /usr/libexec/pagure-create-groups
+    owner: root
+    mode: 0750
+  register: pagure_groups  
+  tags:
+    - groups
+
+- name: Ensuring we have correct groups
+  shell: /usr/libexec/pagure-create-groups
+  when: pagure_groups is changed
+  tags:
+    - groups
