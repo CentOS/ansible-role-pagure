@@ -3,7 +3,7 @@ pagure_groups="{% for group in pagure_supported_sigs %}{{ group }} {% endfor %}"
 for group in ${pagure_groups};do
   pagure-admin list-groups|egrep -v 'Using|Pagure'|awk '{print $5}'|egrep -q "^${group}\$"
   if [ "$?" -ne "0" ] ;then
-    echo y|pagure-admin new-group --display ${group} --description ${group} ${group} {{ pagure_admin_users[0] }}
+    echo y|pagure-admin new-group --display ${group} --description ${group} ${group} {{ pagure_admin_users[0] }} || true
   fi
 done
 
