@@ -4,6 +4,8 @@
     name: httpd
   vars:
     httpd_tls: True
+  tags:
+    - tls
 
 - name: TLS certs
   copy:
