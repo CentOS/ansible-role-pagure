@@ -35,6 +35,8 @@
 - include_tasks: httpd.yml
   tags:
     - httpd
+    - tls
+
 - include_tasks: gitolite.yml
   tags:
     - gitolite
