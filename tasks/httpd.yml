@@ -7,6 +7,18 @@
   tags:
     - tls
 
+- name: Ensuring we configure max number of open files by httpd
+  template:
+    src: httpd-limit_nofile.conf.j2
+    dest: /etc/systemd/system/httpd.service.d/httpd-limit_nofile.conf
+  register: httpd_systemd_override  
+  notify:
+    - restart_httpd
+
+- name: Reloading systemd if needed
+  command: systemctl daemon-reload
+  when: httpd_systemd_override is changed
+
 - name: TLS certs
   copy:
     src: "{{ pkistore }}/{{ item }}"
