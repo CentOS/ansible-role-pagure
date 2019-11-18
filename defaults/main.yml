@@ -78,9 +78,11 @@ pagure_mqtt_tls_cacert:
 pagure_mqtt_tls_cert:
 pagure_mqtt_tls_key:
 
+# Do we want to output computed ACLs on git pushes
+pagure_acl_debug: False
+
 # Do we want repospanner integration
 pagure_repospanner_cluster: False
-pagure_repospanner_acl_debug: False
 
 # Some httpd settings
 # Ensuring that httpd/pagure worker can open multiple files (to avoid "Too many open files")

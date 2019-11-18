@@ -323,11 +323,6 @@ SSH_KEYS_USERNAME_LOOKUP = False
 SSH_KEYS_USERNAME_EXPECT = 'git'
 SSH_KEYS_OPTIONS = 'restrict,command="/usr/libexec/pagure/aclchecker.py %(username)s"'
 
-{% if pagure_repospanner_acl_debug %}
-# Turning the debug mode for ACL checker
-ACL_DEBUG = True
-{% endif %}
-
 # ACL Checker options
 SSH_COMMAND_REPOSPANNER = ([
     "/usr/libexec/repobridge",
@@ -348,6 +343,21 @@ SSH_COMMAND_NON_REPOSPANNER = ([
 HTTP_REPO_ACCESS_GITOLITE = None
 
 # End of repospanner settings
+{% else %}
+# Not using repospanner so needed settings to not even use gitolite either, but dist-git
+SSH_KEYS_USERNAME_LOOKUP = False
+SSH_KEYS_USERNAME_EXPECT = 'git'
+SSH_KEYS_OPTIONS = 'restrict,command="/usr/libexec/pagure/aclchecker.py %(username)s"'
+SSH_COMMAND_NON_REPOSPANNER = ([
+    "%(cmd)s",
+    "%(repopath)s",
+], {"GL_USER": "%(username)s"})
+
+{% endif %}
+
+{% if pagure_acl_debug %}
+# Turning the debug mode for ACL checker
+ACL_DEBUG = True
 {% endif %}
 
 # Logging features
