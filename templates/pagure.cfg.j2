@@ -125,6 +125,9 @@ GL_RC = '{{ pagure_git_rootpath }}/.gitolite.rc'
 ### Path to the /bin directory where the gitolite tools can be found
 GL_BINDIR = None
 
+### Not using gitolite for http operations
+HTTP_REPO_ACCESS_GITOLITE = None
+
 ### For pagure-centos custom gitolite backend
 #GITOLITE_BACKEND = 'distgit'
 GIT_AUTH_BACKEND = 'distgit'
@@ -340,7 +343,6 @@ SSH_COMMAND_NON_REPOSPANNER = ([
     "%(repopath)s",
 ], {"GL_USER": "%(username)s"})
 
-HTTP_REPO_ACCESS_GITOLITE = None
 
 # End of repospanner settings
 {% else %}
