@@ -12,4 +12,3 @@
     - pagure_ev
     - pagure_webhook
     - pagure_loadjson
-    - pagure_mirror

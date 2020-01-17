@@ -144,7 +144,6 @@
     - pagure_worker
     - pagure_loadjson
     - pagure_logcom
-    - pagure_mirror
     
 - include_tasks: repospanner-hook.yml
   when: pagure_repospanner_cluster  
