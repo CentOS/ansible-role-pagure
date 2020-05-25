@@ -1,0 +1,16 @@
+[Unit]
+Description=Lookaside perms watcher
+DefaultDependencies=no
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/libexec/pagure-lookaside-watcher
+Restart=on-failure
+RestartSec=1
+

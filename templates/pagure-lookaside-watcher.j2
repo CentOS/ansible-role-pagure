@@ -1,0 +1,15 @@
+#!/bin/bash
+watchdir="{{ lookaside_rootpath }}/lookaside"
+logfile="/var/log/centos-lookaside-perms.log"
+
+function f_log {
+  echo "[+] $(date +%Y%m%d-%H%M) Lookaside perms watcher -> $* " >> $logfile
+  echo ""
+}
+
+inotifywait -m -r ${watchdir} -e close_write | while read path action file ; 
+  do project=$(echo ${path}|cut -f 5 -d '/') 
+  f_log "Resetting perms on ${project}"
+  chmod 775 -R ${watchdir}/${project} 
+done
+

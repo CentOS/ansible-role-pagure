@@ -6,26 +6,8 @@
 
 - name: Installing required pkgs for pagure
   yum:
-    name: "{{ item }}"
+    name: ['pagure', 'pagure-milters','pagure-ev', 'pagure-webhook', 'pagure-loadjson', 'pagure-logcom', 'pagure-mirror', 'python2-pygments2', 'MySQL-python', 'python-flask-openid', 'python2-fedora-flask', 'redis', 'python-redis', 'python-trollius-redis', 'python-trollius', 'pagure-dist-git', 'mailx']
     state: latest
-  with_items:
-    - pagure
-    - pagure-milters
-    - pagure-ev
-    - pagure-webhook
-    - pagure-loadjson
-    - pagure-logcom
-    - pagure-mirror
-    - python2-pygments2
-    - MySQL-python
-    - python-flask-openid
-    - python2-fedora-flask
-    - redis
-    - python-redis
-    - python-trollius-redis
-    - python-trollius
-    - pagure-dist-git
-    - mailx
   notify:
    - restart_pagure_workers
     
@@ -36,6 +18,10 @@
   tags:
     - httpd
     - tls
+
+- include_tasks: lookaside.yml
+  tags:
+    - lookaside
 
 - include_tasks: gitolite.yml
   tags:
