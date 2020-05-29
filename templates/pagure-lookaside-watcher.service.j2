@@ -10,6 +10,7 @@ WantedBy=multi-user.target
 Type=simple
 User=root
 Group=root
+LimitNOFILE=65536
 ExecStart=/usr/libexec/pagure-lookaside-watcher
 Restart=on-failure
 RestartSec=1
