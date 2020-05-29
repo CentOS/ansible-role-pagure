@@ -137,8 +137,6 @@ def main():
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
 
-    print 'Content-Type: text/plain'
-    print
 
     assert os.environ['REQUEST_URI'].split('/')[1] == 'sources'
 
@@ -184,20 +182,6 @@ def main():
     module_dir = os.path.join(conf.get('lookaside', 'cache_dir'), name, branch)
     dest_file = os.path.join(module_dir, checksum)
 
-    # try to see if we already have this file...
-    if os.path.exists(dest_file):
-        if action == 'check':
-            print 'Available'
-        else:
-            upload_file.file.close()
-            dest_file_stat = os.stat(dest_file)
-            print 'File %s already exists' % filename
-            print 'File: %s Size: %d' % (dest_file, dest_file_stat.st_size)
-        sys.exit(0)
-    elif action == 'check':
-        print 'Missing'
-        sys.exit(0)
-
     # if desired, make sure the user has permission to write to this branch
     if conf.getboolean('acls', 'do_acl'):
         if not check_auth(username, branch):
@@ -209,7 +193,29 @@ def main():
 
     # check that all directories are in place
     if not os.path.isdir(module_dir):
-        os.makedirs(module_dir, 02775)
+        try:
+            os.makedirs(module_dir, 02775)
+        except:
+            print 'Status: 403 Forbidden'
+            print 'Content-type: text/plain'
+            print
+            sys.exit(0)
+
+    # try to see if we already have this file...
+    if os.path.exists(dest_file):
+        if action == 'check':
+            print 'Available'
+        else:
+            upload_file.file.close()
+            dest_file_stat = os.stat(dest_file)
+            print 'Content-Type: text/plain'
+            print
+            print 'File %s already exists' % filename
+            print 'File: %s Size: %d' % (dest_file, dest_file_stat.st_size)
+        sys.exit(0)
+    elif action == 'check':
+        print 'Missing'
+        sys.exit(0)
 
     # grab a temporary filename and dump our file in there
     tempfile.tempdir = module_dir
@@ -241,6 +247,8 @@ def main():
     os.chmod(dest_file, 0644)
 
     print >> sys.stderr, '[username=%s] Stored %s (%d bytes)' % (username, dest_file, filesize)
+    print 'Content-Type: text/plain'
+    print
     print 'File %s size %d CHECKSUM %s stored OK' % (filename, filesize, checksum)
     if conf.getboolean('mail', 'send_mail'):
         send_email(name, checksum, filename, username, branch=branch)
