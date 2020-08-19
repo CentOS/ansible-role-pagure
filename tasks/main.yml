@@ -91,6 +91,7 @@
     dest: "/etc/pagure/{{ item }}"
     owner: git 
     backup: True
+    mode: 0644
   with_items:
     - pagure.cfg
     - alembic.ini

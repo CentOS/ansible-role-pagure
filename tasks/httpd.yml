@@ -11,6 +11,7 @@
   template:
     src: httpd-limit_nofile.conf.j2
     dest: /etc/systemd/system/httpd.service.d/httpd-limit_nofile.conf
+    mode: 0644
   register: httpd_systemd_override  
   notify:
     - restart_httpd
@@ -45,6 +46,7 @@
   template:
     src: "httpd-{{ item }}.j2"
     dest: "/etc/httpd/conf.d/{{ item }}"
+    mode: 0644
   with_items:
     - ssl-pagure.conf
     - vhost-pagure.conf
