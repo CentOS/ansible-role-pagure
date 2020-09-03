@@ -121,7 +121,7 @@
     - name: Ensuring that we can recursively watch lookaside dir
       sysctl:
         name: fs.inotify.max_user_watches
-        value: '65536'
+        value: "{{ sysctl_fs_inotify_max_user_watches }}"
 
     - name: Inotify script to reset perms
       template:

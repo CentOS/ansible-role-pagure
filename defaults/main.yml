@@ -87,6 +87,7 @@ pagure_repospanner_cluster: False
 # Some httpd settings
 # Ensuring that httpd/pagure worker can open multiple files (to avoid "Too many open files")
 pagure_httpd_limit_nofile: 65536
+sysctl_fs_inotify_max_user_watches: '1524288'
 
 # If we want repospanner integration, we need the instances details
 # see repospanner defaults
