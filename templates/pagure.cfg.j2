@@ -10,6 +10,7 @@ ADMIN_SESSION_LIFETIME = timedelta(minutes=20)
 
 # Enable tickets and docs for all repos
 ENABLE_TICKETS = True
+ENABLE_TICKETS_NAMESPACE = [{% for namespace in pagure_tickets_namespaces -%} '{{ namespace }}', {% endfor %}]
 ENABLE_DOCS = False
 
 # Let's ensure that we permit or not admin to delete projects

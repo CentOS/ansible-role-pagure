@@ -23,6 +23,10 @@ pagure_namespaces:
   - rpms
   - sig-core
 
+# List of namespaces for which we'll enable tickets feature and disabled for the rest
+pagure_tickets_namespaces:
+  - sig-core
+
 # Hard-code email address to send pagure errors to  
 pagure_email_error: you@yourdomain.com
 
