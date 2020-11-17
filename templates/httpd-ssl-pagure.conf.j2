@@ -38,7 +38,7 @@ Alias /sources/ {{ lookaside_rootpath }}/lookaside/
 Alias /sources {{ lookaside_rootpath }}/lookaside/
 
 <Directory "{{ lookaside_rootpath }}/lookaside/">
-  HeaderName /centos-design/centos_header.html
+  HeaderName /centos-design/header-centos.html
   AllowOverride Indexes
   Options Indexes FollowSymLinks
   <IfVersion < 2.4>
@@ -57,9 +57,7 @@ Alias /sources {{ lookaside_rootpath }}/lookaside/
     SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
     # require that the client auth cert was created by us and signed by us
     SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
-                and %{SSL_CLIENT_S_DN_O} eq "The CentOS Project" \
-                and %{SSL_CLIENT_S_DN_OU} eq "CentOS User Cert" \
-                and %{SSL_CLIENT_I_DN_O} eq "The CentOS Project")
+                and %{SSL_CLIENT_I_DN_O} eq "{{ lookaside_fas_ca_issuer_org }}")
 </Directory>
 
 <Location /sources/upload.cgi>
@@ -74,9 +72,7 @@ Alias /sources {{ lookaside_rootpath }}/lookaside/
     # require that the access comes from internal or that
     # the client auth cert was created by us and signed by us
     SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
-                and %{SSL_CLIENT_S_DN_O} eq "The CentOS Project" \
-                and %{SSL_CLIENT_S_DN_OU} eq "CentOS User Cert" \
-                and %{SSL_CLIENT_I_DN_O} eq "The CentOS Project")
+                and %{SSL_CLIENT_I_DN_O} eq "{{ lookaside_fas_ca_issuer_org }}")
 </Location>
 
 

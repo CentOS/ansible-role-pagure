@@ -106,6 +106,32 @@
         dest: "/var/www/cgi-bin/upload.cgi"
         mode: 0755
         setype: "git_script_exec_t"
+      when: not lookaside_fasjson
+
+    - block:
+        - name: Installing required pkg for kerberos/gssapi
+          yum:
+            name: python-requests-gssapi
+            state: installed
+
+        - name: Install FASJSON lookaside upload.cgi script
+          copy:
+            src: "upload.cgi.fasjson"
+            dest: "/var/www/cgi-bin/upload.cgi"
+            mode: 0755
+            setype: "git_script_exec_t"
+
+        - name: Distributing needed keytab
+          copy:
+            src: "{{ pkistore }}/krb5/{{ lookaside_fasjson_keytab }}"
+            dest: "/etc/httpd/conf.d/{{ lookaside_fasjson_keytab }}"
+            mode: '0400'
+            owner: apache
+            group: apache
+            setype: "git_script_exec_t"
+
+      when: lookaside_fasjson
+
 
     - name: install the lookaside configuration file 
       template:

@@ -3,9 +3,14 @@ cache_dir = {{ lookaside_rootpath }}/lookaside
 
 [acls]
 do_acl = yes
+{% if lookaside_fasjson %}
+fasjson_url = {{ lookaside_fasjson_url }}
+fasjson_keytab = /etc/httpd/conf.d/{{ lookaside_fasjson_keytab }}
+{% else %}
 fas_url = {{ lookaside_fas_url }}
 fas_username = {{ lookaside_fas_user }}
 fas_password = {{ lookaside_fas_pass }}
+{% endif %}
 push_superadmin_group = {{ pagure_rcm_group }}
 
 [mail]

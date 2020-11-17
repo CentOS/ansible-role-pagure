@@ -59,11 +59,22 @@ pagure_rcm_users:
   - youruser
 
 # Lookaside specific variables
+# Which upstream API we need to query on each call for group membership ? fas or fasjson
+# FAS is "legacy" and calling fas, while fasjson is the new endpoint as portal in front of IPA. Pick *one*
 lookaside_rootpath: /srv/cache
 lookaside_fas_user: youruser
 lookaside_fas_pass: yourpass
 lookaside_fas_url: https://fas.url
+
+# If using fasjson, which is the kerberos keytab to use to auth against fasjson and which fasjson urlendpoint
+lookaside_fasjson: False
+lookaside_fasson_url: https://fasjson.stg.fedoraproject.org
+lookaside_fasjson_keytab:    # File distributed by ansible to let upload.cgi query fasjson/IPA
+
+# Common options for both : which CA to verify/auth TLS client against (checking that they are signed by that CA)
 lookaside_fas_ca_crt: fas_ca_cert-prod.crt
+lookaside_fas_ca_issuer_org: "The CentOS Project" # Varies from CA to check to ensure it's correct with IPA certs
+
 # which specific rcm user can push through ssh instead of upload.cgi/tls auth
 lookaside_ssh_users:
   - login_name: pushuser
