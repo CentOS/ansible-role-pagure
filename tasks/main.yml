@@ -6,7 +6,7 @@
 
 - name: Installing required pkgs for pagure
   yum:
-    name: ['pagure', 'pagure-milters','pagure-ev', 'pagure-webhook', 'pagure-loadjson', 'pagure-logcom', 'pagure-mirror', 'python2-pygments2', 'MySQL-python', 'python-flask-openid', 'python2-fedora-flask', 'redis', 'python-redis', 'python-trollius-redis', 'python-trollius', 'pagure-dist-git', 'mailx']
+    name: ['pagure', 'pagure-milters','pagure-ev', 'pagure-webhook', 'pagure-loadjson', 'pagure-logcom', 'pagure-mirror', 'python2-pygments2', 'MySQL-python', 'python-flask-openid', 'python2-fedora-flask', 'redis', 'python-redis', 'python-trollius-redis', 'python-trollius', 'pagure-dist-git', 'mailx', 'patch']
     state: latest
   notify:
    - restart_pagure_workers
@@ -134,6 +134,9 @@
     
 - include_tasks: repospanner-hook.yml
   when: pagure_repospanner_cluster  
+
+- include_tasks: pagure-patches.yml
+  when: pagure_patches
 
 - include_tasks: monitoring.yml
   tags:

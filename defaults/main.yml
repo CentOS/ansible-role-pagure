@@ -13,6 +13,11 @@ pagure_git_rootpath: /srv/git
 # Which openid endpoint to use for auth
 pagure_openid_endpoint: https://id.stg.centos.org/idp/openid/
 
+# Do we need to apply some temporary patches on pagure itself ?
+pagure_patches: False
+pagure_patches_list:
+  - pagure-openid-base64-sshpubkey.patch # Needed if ssh pub key comes from IPA instead of FAS : base64 encoded so neeeds to be decoded for pagure 
+
 # List of user with admin rights in pagure (not coming from any group)
 pagure_admin_users:
   - root

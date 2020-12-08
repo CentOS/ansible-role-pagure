@@ -1,0 +1,11 @@
+- name: Patching pagure with temporary patches if needed
+  patch:
+    src: "patches/{{ item }}"
+    basedir: /
+  with_items: "{{ pagure_patches_list }}"
+  when: pagure_patches
+  notify:
+    - restart_pagure_workers
+
+
+
