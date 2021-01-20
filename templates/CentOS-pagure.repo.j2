@@ -1,11 +1,27 @@
-[centos-pagure]
-name=CentOS Infra Pagure repository
-{% if centos_infra_env == 'prod' %}
-baseurl=http://admin-repo.centos.org/pagure/$releasever/$basearch/
+{% if ansible_distribution_major_version == '7' and not ansible_architecture == 'x86_64' %}
+{% set contentdir = 'altarch' %}
 {% else %}
-baseurl=http://admin-repo.centos.org/pagure.{{ centos_infra_env }}/$releasever/$basearch/
+{% set contentdir = 'centos' %} 
 {% endif %}
+
+{% if centos_infra_env == 'prod' %}
+[centos-pagure]
+name=CentOS Infra stg Pagure repository
+baseurl=http://mirror.centos.org/{{ contentdir }}/$releasever/infra/$basearch/gitforge-pagure/
 enabled=1
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Infra
+{% elif centos_infra_env == 'stg' %}
+[centos-pagure]
+name=CentOS Infra Pagure repository
+baseurl=http://buildlogs.centos.org/centos/$releasever/infra/$basearch/gitforge-pagure/
+enabled=1
+gpgcheck=0
+{% else %}
+[centos-pagure]
+name=CentOS Infra dev Pagure repository
+baseurl=http://repo.dev.centos.org/$releasever/infra/gitforge-pagure/$basearch/
+enabled=1
+gpgcheck=0
+{% endif %}
 

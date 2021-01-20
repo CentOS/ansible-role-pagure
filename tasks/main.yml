@@ -3,6 +3,8 @@
   template:
     src: CentOS-pagure.repo.j2
     dest: /etc/yum.repos.d/CentOS-pagure.repo
+  tags:
+    - yum
 
 - name: Installing required pkgs for pagure
   yum:
