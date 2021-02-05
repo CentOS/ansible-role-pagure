@@ -74,7 +74,7 @@ def check_auth(username, branchname, groupmemberships=None):
             # anyways
             continue
 
-        if re.match(r'c\d-{0}.*'.format(group), branchname):
+        if re.match(r'c\ds?-{0}.*'.format(group), branchname):
             print >>sys.stderr, "Matched {} against {}".format(group,
                                                                branchname)
             return True
