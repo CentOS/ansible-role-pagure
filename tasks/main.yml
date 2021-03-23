@@ -65,8 +65,11 @@
     state: directory
     owner: git
     group: git
-    path: "{{ pagure_git_rootpath }}/attachments"
+    path: "{{ pagure_git_rootpath }}/{{ item }}"
     setype: gitosis_var_lib_t
+  with_items:
+    - attachments
+    - archives
 
 - name: Ensuring httpd can read git repositories
   acl:
