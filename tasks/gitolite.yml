@@ -1,13 +1,18 @@
 ---
-- name: Rename the user gitolite into git
-  command: usermod --move-home --login git --home "{{ pagure_git_rootpath }}"/ gitolite3
-  args:
-    creates: "{{ pagure_git_rootpath }}"
+#- name: Rename the user gitolite into git
+#  command: usermod --move-home --login git --home "{{ pagure_git_rootpath }}"/ gitolite3
+#  args:
+#    creates: "{{ pagure_git_rootpath }}"
 
-- name: Rename the group gitolite into git
-  command: groupmod --new-name git gitolite3
-  args:
-    creates: "{{ pagure_git_rootpath }}/.gitolite"
+#- name: Rename the group gitolite into git
+#  command: groupmod --new-name git gitolite3
+#  args:
+#    creates: "{{ pagure_git_rootpath }}/.gitolite"
+
+- name: Ensuring we have specific git user
+  user:
+    name: git
+    home: "{{ pagure_git_rootpath }}"
 
 - name: Ensuring correct context on dir
   file:
@@ -17,22 +22,22 @@
     group: git
     setype: gitosis_var_lib_t
 
-- name: Ensuring correct context on dir
-  file:
-    path: "{{ pagure_git_rootpath }}/.ssh"
-    recurse: True
-    state: directory
-    owner: git
-    group: git
-    setype: ssh_home_t
+#- name: Ensuring correct context on dir
+#  file:
+#    path: "{{ pagure_git_rootpath }}/.ssh"
+#    recurse: True
+#    state: directory
+#    owner: git
+#    group: git
+#    setype: ssh_home_t
 
-- name: Ensuring correct context on file
-  file:
-    path: "{{ pagure_git_rootpath }}/.ssh/authorized_keys"
-    state: file
-    owner: git
-    group: git
-    setype: ssh_home_t
+#- name: Ensuring correct context on file
+#  file:
+#    path: "{{ pagure_git_rootpath }}/.ssh/authorized_keys"
+#    state: file
+#    owner: git
+#    group: git
+#    setype: ssh_home_t
 
 - name: Needed structure for gitolite config files
   file:
@@ -48,20 +53,20 @@
     - .gitolite/conf
     - .gitolite/keydir
 
-- name: Gitolite rc file
-  template: 
-    src: gitolite.rc.j2
-    dest: "{{ pagure_git_rootpath }}/.gitolite.rc"
-    owner: git 
-    group: git 
-    mode: 0755
-    setype: gitosis_var_lib_t
+#- name: Gitolite rc file
+#  template: 
+#    src: gitolite.rc.j2
+#    dest: "{{ pagure_git_rootpath }}/.gitolite.rc"
+#    owner: git 
+#    group: git 
+#    mode: 0755
+#    setype: gitosis_var_lib_t
 
-- name: Ensuring gitolite.conf exists
-  file: 
-    path: "{{ pagure_git_rootpath}}/.gitolite/conf/gitolite.conf"
-    state: touch
-    owner: git
-    group: git
-    setype: gitosis_var_lib_t
+#- name: Ensuring gitolite.conf exists
+#  file: 
+#    path: "{{ pagure_git_rootpath}}/.gitolite/conf/gitolite.conf"
+#    state: touch
+#    owner: git
+#    group: git
+#    setype: gitosis_var_lib_t
 

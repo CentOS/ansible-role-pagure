@@ -1,4 +1,11 @@
 ---
+- name: Importing specific distro variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+  tags:
+    - vars
+
 - name: Adding our pagure repo 
   template:
     src: CentOS-pagure.repo.j2
@@ -6,9 +13,19 @@
   tags:
     - yum
 
+- name: Ensuring we use PowerTools repo on 8-stream
+  ini_file:
+    path: /etc/yum.repos.d/CentOS-Stream-PowerTools.repo
+    section: powertools
+    option: enabled
+    value: '1'
+  tags:
+    - dnf
+  when: ansible_distribution_major_version == '8'  
+
 - name: Installing required pkgs for pagure
   yum:
-    name: ['pagure', 'pagure-milters','pagure-ev', 'pagure-webhook', 'pagure-loadjson', 'pagure-logcom', 'pagure-mirror', 'python2-pygments2', 'MySQL-python', 'python-flask-openid', 'python2-fedora-flask', 'redis', 'python-redis', 'python-trollius-redis', 'python-trollius', 'pagure-dist-git', 'mailx', 'patch']
+    name: "{{ pagure_pkgs }}" 
     state: latest
   notify:
    - restart_pagure_workers
@@ -111,11 +128,11 @@
     removes: /etc/pagure/initdb.done
 
 - name: Init pagure DB
-  shell: python /usr/share/pagure/pagure_createdb.py -c /etc/pagure/pagure.cfg -i /etc/pagure/alembic.ini ; touch /etc/pagure/initdb.done
+  shell: "{{ pagure_initdb_cmd }}"
 
 - name: Deploying pagure CentOS theme
   unarchive:
-    src: pagure-theme-centos.tar.gz
+    src: "{{ pagure_centos_theme_file }}"
     dest: /
   tags:
     - theme

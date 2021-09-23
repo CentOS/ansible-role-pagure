@@ -1,0 +1,25 @@
+pagure_pkgs: 
+  - pagure
+  - pagure-milters
+  - pagure-ev
+  - pagure-webhook
+  - pagure-loadjson
+  - pagure-logcom
+  - pagure-mirror
+  - pagure-web-apache-httpd
+  - python3-pygments
+  - python3-mysqlclient
+  - python3-flask-openid
+  - python3-fedora-flask
+  - redis
+  - python3-redis
+  - pagure-dist-git
+  - python3-mod_wsgi
+  - mailx
+  - patch
+
+pagure_initdb_cmd: python3 /usr/share/pagure/pagure_createdb.py -c /etc/pagure/pagure.cfg -i /etc/pagure/alembic.ini ; touch /etc/pagure/initdb.done
+pagure_centos_theme_file: pagure-python3-theme-centos.tar.gz
+
+python_mqtt_pkg: python3-paho-mqtt
+python_request_gssapi_pkg: python3-requests-gssapi

@@ -111,7 +111,7 @@
     - block:
         - name: Installing required pkg for kerberos/gssapi
           yum:
-            name: python-requests-gssapi
+            name: "{{ python_request_gssapi_pkg }}"
             state: installed
 
         - name: Install FASJSON lookaside upload.cgi script

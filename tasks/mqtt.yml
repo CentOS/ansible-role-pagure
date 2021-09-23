@@ -1,6 +1,6 @@
 - name: Ensuring we have correct python pkg for mqtt
   yum:
-    name: python-paho-mqtt
+    name: "{{ python_mqtt_pkg }}"
     state: latest
 
 - name: Distributing needed TLS files for MQTT notifications

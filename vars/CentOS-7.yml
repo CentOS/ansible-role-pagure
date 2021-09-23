@@ -1,0 +1,26 @@
+pagure_pkgs: 
+  - pagure
+  - pagure-milters
+  - pagure-ev
+  - pagure-webhook
+  - pagure-loadjson
+  - pagure-logcom
+  - pagure-mirror
+  - python2-pygments2
+  - MySQL-python
+  - python-flask-openid
+  - python2-fedora-flask
+  - redis
+  - python-redis
+  - python-trollius-redis
+  - python-trollius
+  - pagure-dist-git
+  - mailx
+  - patch
+
+pagure_initdb_cmd: python /usr/share/pagure/pagure_createdb.py -c /etc/pagure/pagure.cfg -i /etc/pagure/alembic.ini ; touch /etc/pagure/initdb.done
+pagure_centos_theme_file: pagure--theme-centos.tar.gz
+
+python_mqtt_pkg: python-paho-mqtt  
+python_request_gssapi_pkg: python-requests-gssapi
+
