@@ -33,6 +33,7 @@ SSLVerifyClient optional
 SSLOptions +OptRenegotiate
 
 ScriptAlias /sources/upload.cgi /var/www/cgi-bin/upload.cgi
+ScriptAlias /sources/upload.cgi /var/www/cgi-bin/upload_sig.cgi
 
 Alias /sources/ {{ lookaside_rootpath }}/lookaside/
 Alias /sources {{ lookaside_rootpath }}/lookaside/
@@ -61,7 +62,7 @@ Alias /sources {{ lookaside_rootpath }}/lookaside/
 </Directory>
 
 <Location /sources/upload.cgi>
-    SSLRequireSSL
+    SSLRequireSS
 
     Options +ExecCGI
     Require all granted

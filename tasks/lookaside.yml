@@ -130,6 +130,13 @@
             group: apache
             setype: "git_script_exec_t"
 
+        - name: Install FASJSON SIG lookaside upload.cgi script
+          copy:
+            src: "upload_sig.cgi"
+            dest: "/var/www/cgi-bin/upload.cgi"
+            mode: 0755
+            setype: "git_script_exec_t"
+
       when: lookaside_fasjson
 
 
