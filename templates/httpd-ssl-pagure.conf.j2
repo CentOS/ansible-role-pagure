@@ -33,7 +33,7 @@ SSLVerifyClient optional
 SSLOptions +OptRenegotiate
 
 ScriptAlias /sources/upload.cgi /var/www/cgi-bin/upload.cgi
-ScriptAlias /sources/upload.cgi /var/www/cgi-bin/upload_sig.cgi
+ScriptAlias /sources/upload_sig.cgi /var/www/cgi-bin/upload_sig.cgi
 
 Alias /sources/ {{ lookaside_rootpath }}/lookaside/
 Alias /sources {{ lookaside_rootpath }}/lookaside/
@@ -62,7 +62,22 @@ Alias /sources {{ lookaside_rootpath }}/lookaside/
 </Directory>
 
 <Location /sources/upload.cgi>
-    SSLRequireSS
+    SSLRequireSSL
+
+    Options +ExecCGI
+    Require all granted
+
+    SSLVerifyClient optional
+    SSLVerifyDepth 1
+    SSLOptions +StrictRequire +StdEnvVars +OptRenegotiate
+    # require that the access comes from internal or that
+    # the client auth cert was created by us and signed by us
+    SSLRequire ( %{SSL_CIPHER} !~ m/^(EXP|NULL)/ \
+                and %{SSL_CLIENT_I_DN_O} eq "{{ lookaside_fas_ca_issuer_org }}")
+</Location>
+
+<Location /sources/upload_sig.cgi>
+    SSLRequireSSL
 
     Options +ExecCGI
     Require all granted
