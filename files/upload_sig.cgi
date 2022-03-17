@@ -83,8 +83,8 @@ def check_auth(username, branchname=None, groupmemberships=None):
                 return True
 
     # requires to be a sig member
-    if not is_sig_member(groupmemberships):
-        return False
+    if is_sig_member(groupmemberships):
+        return True
 
     return False
 
