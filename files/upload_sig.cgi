@@ -68,24 +68,23 @@ def send_error(text):
     sys.exit(1)
 
 
-def check_auth(username, branchname=None, groupmemberships=None):
-    if groupmemberships is None:
-        groupmemberships = get_memberships(username)
-
+def check_auth(groupmemberships):
     for group in groupmemberships:
         if group == conf.get('acls', 'push_superadmin_group'):
             return True
 
-        if branchname is not None:
-            if re.match(r'c\ds?-{0}.*'.format(group), branchname):
-                print >>sys.stderr, "Matched {} against {}".format(group,
+        if group.startswith('sig'):
+            return True
+
+    return False
+
+
+def check_branch(branchname, groupmemberships):
+    for group in groupmemberships:
+        if re.match(r'c\ds?-{0}.*'.format(group), branchname):
+            print >>sys.stderr, "Matched {} against {}".format(group,
                                                                    branchname)
-                return True
-
-    # requires to be a sig member
-    if is_sig_member(groupmemberships):
-        return True
-
+            return True
     return False
 
 
@@ -210,12 +209,21 @@ def main():
 
     # if desired, make sure the user has permission to write to this branch
     if conf.getboolean('acls', 'do_acl'):
-        if not check_auth(username, branch):
+        groupmemberships = get_memberships(username)
+        if not check_auth(groupmemberships):
             print 'Status: 403 Forbidden'
             print 'Content-type: text/plain'
             print
             print 'You must connect with a valid certificate and have permissions on the appropriate branch to upload'
             sys.exit(0)
+
+        if branch is not None:
+            if not check_branch(branch, groupmemberships):
+                    print 'Status: 403 Forbidden'
+                    print 'Content-type: text/plain'
+                    print
+                    print 'Invalid branch format'
+                    sys.exit(0)
 
     # check that all directories are in place
     if not os.path.isdir(module_dir):
