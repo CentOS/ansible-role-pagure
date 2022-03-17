@@ -68,7 +68,7 @@ def send_error(text):
     sys.exit(1)
 
 
-def check_auth(username, branchname, groupmemberships=None):
+def check_auth(username, branchname=None, groupmemberships=None):
     if groupmemberships is None:
         groupmemberships = get_memberships(username)
 
@@ -76,10 +76,11 @@ def check_auth(username, branchname, groupmemberships=None):
         if group == conf.get('acls', 'push_superadmin_group'):
             return True
 
-        if re.match(r'c\ds?-{0}.*'.format(group), branchname):
-            print >>sys.stderr, "Matched {} against {}".format(group,
-                                                               branchname)
-            return True
+        if branchname is not None:
+            if re.match(r'c\ds?-{0}.*'.format(group), branchname):
+                print >>sys.stderr, "Matched {} against {}".format(group,
+                                                                   branchname)
+                return True
 
     # requires to be a sig member
     if not is_sig_member(groupmemberships):
