@@ -154,6 +154,8 @@ BLACKLIST_RES = [{% for bl in pagure_blacklist_branches -%} '{{ bl }}', {% endfo
 RCM_GROUP = '{{ pagure_rcm_group }}'
 RCM_BRANCHES = [{% for branch in pagure_rcm_branches -%} '{{ branch }}', {% endfor %}]
 
+CASE_SENSITIVE = True
+
 # This option will allow the ignore_existing_repos parameter when create a repo through pagure API
 # Needed when we'll want to create a repo for CentOS that already exist in Fedora / Repospanner cluster
 ALLOW_ADMIN_IGNORE_EXISTING_REPOS = True
