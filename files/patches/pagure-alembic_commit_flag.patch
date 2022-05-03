@@ -1,0 +1,18 @@
+--- /usr/share/pagure/alembic/versions/c0bffa4e8fbc_token_if_in_commit_flag_can_be_null.py.orig	2022-04-28 12:54:54.143903166 +0000
++++ /usr/share/pagure/alembic/versions/c0bffa4e8fbc_token_if_in_commit_flag_can_be_null.py	2022-04-28 12:55:48.926541606 +0000
+@@ -19,6 +19,7 @@
+     op.alter_column(
+         'commit_flags',
+         column_name='token_id',
++        existing_type=sa.String(64),
+         nullable=False,
+         existing_nullable=True
+     )
+@@ -28,6 +29,7 @@
+     op.alter_column(
+         'commit_flags',
+         column_name='token_id',
++        existing_type=sa.String(64),
+         nullable=True,
+         existing_nullable=False
+     )

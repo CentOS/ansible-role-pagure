@@ -24,3 +24,7 @@ pagure_centos_theme_file: pagure--theme-centos.tar.gz
 python_mqtt_pkg: python-paho-mqtt  
 python_request_gssapi_pkg: python-requests-gssapi
 
+pagure_sebooleans:
+  - httpd_execmem
+  - httpd_can_network_connect
+  - nis_enabled

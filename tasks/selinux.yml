@@ -4,14 +4,13 @@
     name: "{{ item }}"
     persistent: yes
     state: yes
-  with_items:
-    - httpd_execmem
-    - httpd_can_network_connect
-    - nis_enabled
- 
-- name: Distributing custom selinux policy
+  with_items: "{{ pagure_sebooleans }}"
+  tags:
+    - selinux
+
+- name: Distributing custom selinux policy file[s]
   copy:
-    src: "selinux/{{ item }}"
+    src: "selinux/{{ ansible_distribution_major_version }}/{{ item }}"
     dest: "/etc/selinux/centos/{{ item }}"
   with_items:
     - pagure.pp
@@ -20,7 +19,7 @@
   tags:
     - selinux
 
-- name: Reloading selinux polic on change
+- name: Reloading selinux policy on change
   shell: "/usr/sbin/semodule -u /etc/selinux/centos/{{ item.item }}"
   with_items: "{{ sepolicy.results }}"
   when: item.changed

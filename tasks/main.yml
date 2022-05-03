@@ -13,7 +13,7 @@
   tags:
     - yum
 
-- name: Ensuring we use PowerTools repo on 8-stream
+- name: Ensuring we use PowerTools repo on CentOS 8-stream
   ini_file:
     path: /etc/yum.repos.d/CentOS-Stream-PowerTools.repo
     section: powertools
@@ -21,7 +21,9 @@
     value: '1'
   tags:
     - dnf
-  when: ansible_distribution_major_version == '8'  
+  when: 
+    - ansible_distribution_major_version == '8'  
+    - ansible_distribution == 'CentOS'
 
 - name: Installing required pkgs for pagure
   yum:
@@ -159,6 +161,8 @@
 
 - include_tasks: pagure-patches.yml
   when: pagure_patches
+  tags:
+    - patches
 
 - include_tasks: monitoring.yml
   tags:

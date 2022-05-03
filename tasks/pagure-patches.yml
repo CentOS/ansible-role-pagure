@@ -6,6 +6,7 @@
   when: pagure_patches
   notify:
     - restart_pagure_workers
-
+  tags:
+    - patches
 
 

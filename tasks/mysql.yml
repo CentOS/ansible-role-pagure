@@ -1,18 +1,21 @@
 ---
 
-- include_role:
+- ansible.builtin.include_role:
     name: mysql
 
 - name: Setting up MySQL DB for pagure
-  mysql_db:
+  community.mysql.mysql_db:
     db: "{{ pagure_mysqldb_name }}"
     state: present
- 
+  tags:
+    - mysql
+
 - name: Granting mysql db right for pagure
-  mysql_user:
+  community.mysql.mysql_user:
     name: "{{ pagure_mysqldb_user }}"
     password: "{{ pagure_mysqldb_pass }}"
     priv: "{{ pagure_mysqldb_name }}.*:ALL"
     state: present
 
-
+  tags:
+    - mysql

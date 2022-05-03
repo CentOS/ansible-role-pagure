@@ -1,0 +1,18 @@
+
+module pagure-lookaside 1.1;
+
+require {
+	type httpd_config_t;
+	type httpd_t;
+	type git_user_content_t;
+	type gitosis_var_lib_t;
+	type git_script_t;
+	class dir { add_name create remove_name write search rmdir };
+	class file { create rename setattr write };
+}
+
+#============= git_script_t ==============
+allow git_script_t git_user_content_t:dir { add_name create remove_name write };
+allow git_script_t git_user_content_t:file { create rename setattr write };
+allow git_script_t httpd_config_t:dir search;
+allow httpd_t gitosis_var_lib_t:dir rmdir;

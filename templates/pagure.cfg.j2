@@ -196,7 +196,7 @@ BLACKLISTED_PROJECTS = [
 ### IP addresses allowed to access the internal endpoints
 ### These endpoints are used by the milter and are security sensitive, thus
 ### the IP filter
-IP_ALLOWED_INTERNAL = ['127.0.0.1', 'localhost', '::1', {% for ip in ansible_all_ipv4_addresses -%} '{{ ip }}', {% endfor %} {% for ip in ansible_all_ipv6_addresses -%} '{{ ip }}', {% endfor %}]
+IP_ALLOWED_INTERNAL = ['127.0.0.1', 'localhost', '::1', {% for ip in ansible_all_ipv4_addresses -%} '{{ ip }}', {% endfor %} {% for ip in ansible_all_ipv6_addresses -%} '{{ ip }}', {% endfor %}{% if ip is defined -%} '{{ ip }}', {% endif %}]
 
 ### EventSource/Web-Hook/Redis configuration
 # The eventsource integration is what allows pagure to refresh the content

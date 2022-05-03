@@ -1,0 +1,11 @@
+--- /usr/lib/python3.6/site-packages/pagure/lib/notify.py.orig	2022-04-29 15:00:54.999590941 +0000
++++ /usr/lib/python3.6/site-packages/pagure/lib/notify.py	2022-04-29 15:02:03.246905558 +0000
+@@ -161,7 +161,7 @@
+         return
+ 
+     mqtt_host = pagure_config.get("MQTT_HOST")
+-    mqtt_port = pagure_config.get("MQTT_PORT")
++    mqtt_port = int(pagure_config.get("MQTT_PORT"))
+ 
+     mqtt_username = pagure_config.get("MQTT_USERNAME")
+     mqtt_pass = pagure_config.get("MQTT_PASSWORD")
