@@ -102,7 +102,7 @@
 
     - name: install the upload.cgi script
       copy:
-        src: "upload.cgi"
+        src: "{{ ansible_distribution_major_version }}/upload.cgi"
         dest: "/var/www/cgi-bin/upload.cgi"
         mode: 0755
         setype: "git_script_exec_t"
@@ -116,7 +116,7 @@
 
         - name: Install FASJSON lookaside upload.cgi script
           copy:
-            src: "upload.cgi.fasjson"
+            src: "{{ ansible_distribution_major_version }}/upload.cgi.fasjson"
             dest: "/var/www/cgi-bin/upload.cgi"
             mode: 0755
             setype: "git_script_exec_t"
@@ -132,7 +132,7 @@
 
         - name: Install FASJSON SIG lookaside upload.cgi script
           copy:
-            src: "upload_sig.cgi"
+            src: "{{ ansible_distribution_major_version }}/upload_sig.cgi"
             dest: "/var/www/cgi-bin/upload_sig.cgi"
             mode: 0755
             setype: "git_script_exec_t"
