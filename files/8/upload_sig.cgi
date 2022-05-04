@@ -31,12 +31,12 @@ import tempfile
 import syslog
 import smtplib
 import re
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 import json
 import requests
 from requests_gssapi import HTTPSPNEGOAuth
 
-from email import Utils
+from email import utils
 try:
     from email.mime.text import MIMEText
 except ImportError:
@@ -62,9 +62,9 @@ def stripwithquotes(thestring):
 
 
 def send_error(text):
-    print 'Content-Type: text/plain'
-    print
-    print text
+    print('Content-Type: text/plain')
+    print()
+    print(text)
     sys.exit(1)
 
 
@@ -82,8 +82,8 @@ def check_auth(groupmemberships):
 def check_branch(branchname, groupmemberships):
     for group in groupmemberships:
         if re.match(r'c\ds?-{0}.*'.format(group), branchname):
-            print >>sys.stderr, "Matched {} against {}".format(group,
-                                                                   branchname)
+            stderr_message = 'Matched %s against %s'  % (group, branchname)
+            sys.stderr.write(str(stderr_message))
             return True
     return False
 
@@ -96,11 +96,13 @@ def get_memberships(username):
       gssapi_auth = HTTPSPNEGOAuth(opportunistic_auth=True,mutual_authentication='OPTIONAL')
       results = requests.get(fasjson_full_url, auth=gssapi_auth) 
     except:
-        print >>sys.stderr, "Error looking up group memberships. HTTP Error code {}".format(results.status_code)
+        stderr_message = 'Error looking up group memberships. HTTP Error code %s' % (results.status_code)
+        sys.stderr.write(str(stderr_message))
         return None
       
     if results.status_code >= 400:
-        print >>sys.stderr, "Error looking up group memberships. HTTP Error code {}".format(results.status_code)
+        stderr_message = 'Error looking up group memberships. HTTP Error code %s' % (results.status_code)
+        sys.stderr.write(str(stderr_message))
         return None
 
     json_body = json.loads(results.text)
@@ -140,12 +142,12 @@ def send_email(pkg, sha1, filename, username, branch=''):
         s.sendmail(sender, recipient, msg.as_string())
     except:
         errstr = 'sending mail for upload of %s failed!' % filename
-        print >> sys.stderr, errstr
+        sys.stderr.write(errstr)
         syslog.syslog(errstr)
 
 
 def main():
-    os.umask(002)
+    os.umask(int('002', 8))
 
     username = os.environ.get('SSL_CLIENT_S_DN_CN', None)
 
@@ -184,9 +186,11 @@ def main():
     if 'file' not in form:
         action = 'check'
         if is_hash_format:
-            print >> sys.stderr, '[username=%s] Checking file status: NAME=%s HASH=%s SHA1SUM=%s' % (username, name, hash_type, checksum)
+            stderr_message = '[username=%s] Checking file status: NAME=%s HASH=%s SHA1SUM=%s' % (username, name, hash_type, checksum)
+            sys.stderr.write(str(stderr_message))
         else:
-            print >> sys.stderr, '[username=%s] Checking file status: NAME=%s BRANCH=%s SHA1SUM=%s' % (username, name, branch, checksum)
+            stderr_message =  '[username=%s] Checking file status: NAME=%s BRANCH=%s SHA1SUM=%s' % (username, name, branch, checksum) 
+            sys.stderr.write(str(stderr_message))
     else:
         action = 'upload'
         upload_file = form['file']
@@ -194,9 +198,11 @@ def main():
             send_error('No file given for upload. Aborting.')
         filename = os.path.basename(upload_file.filename)
         if is_hash_format:
-            print >> sys.stderr, '[username=%s] Processing upload request: NAME=%s HASH=%s CHECKSUM=%s' % (username, name, hash_type, checksum)
+            stderr_message = '[username=%s] Processing upload request: NAME=%s HASH=%s CHECKSUM=%s' % (username, name, hash_type, checksum)
+            sys.stderr.write(str(stderr_message))
         else:
-            print >> sys.stderr, '[username=%s] Processing upload request: NAME=%s BRANCH=%s CHECKSUM=%s' % (username, name, branch, checksum)
+            stderr_message = '[username=%s] Processing upload request: NAME=%s BRANCH=%s CHECKSUM=%s' % (username, name, branch, checksum)
+            sys.stderr.write(str(stderr_message))
 
     if is_hash_format:
         module_dir_args = [name, filename, hash_type, checksum]
@@ -211,50 +217,50 @@ def main():
     if conf.getboolean('acls', 'do_acl'):
         groupmemberships = get_memberships(username)
         if not check_auth(groupmemberships):
-            print 'Status: 403 Forbidden'
-            print 'Content-type: text/plain'
-            print
-            print 'You must connect with a valid certificate and have permissions on the appropriate branch to upload'
+            print('Status: 403 Forbidden')
+            print('Content-type: text/plain')
+            print()
+            print('You must connect with a valid certificate and have permissions on the appropriate branch to upload')
             sys.exit(0)
 
         if branch is not None:
             if not check_branch(branch, groupmemberships):
-                    print 'Status: 403 Forbidden'
-                    print 'Content-type: text/plain'
-                    print
-                    print 'Invalid branch format'
+                    print('Status: 403 Forbidden')
+                    print('Content-type: text/plain')
+                    print()
+                    print('Invalid branch format')
                     sys.exit(0)
 
     # check that all directories are in place
     if not os.path.isdir(module_dir):
         try:
-            os.makedirs(module_dir, 02775)
+            os.makedirs(module_dir, mode=int('02775'))
         except:
-            print 'Status: 403 Forbidden'
-            print 'Content-type: text/plain'
-            print
+            print('Status: 403 Forbidden')
+            print('Content-type: text/plain')
+            print()
             sys.exit(0)
 
     # try to see if we already have this file...
     if os.path.exists(dest_file):
         if action == 'check':
-            print 'Available'
+            print('Available')
         else:
             upload_file.file.close()
             dest_file_stat = os.stat(dest_file)
-            print 'Content-Type: text/plain'
-            print
-            print 'File %s already exists' % filename
-            print 'File: %s Size: %d' % (dest_file, dest_file_stat.st_size)
+            print('Content-Type: text/plain')
+            print()
+            print('File %s already exists' % filename)
+            print('File: %s Size: %s' % (dest_file, dest_file_stat.st_size))
         sys.exit(0)
     elif action == 'check':
-        print 'Missing'
+        print('Missing')
         sys.exit(0)
 
     # grab a temporary filename and dump our file in there
     tempfile.tempdir = module_dir
     tmpfile = tempfile.mkstemp(checksum)[1]
-    tmpfd = open(tmpfile, 'w')
+    tmpfd = open(tmpfile, 'wb')
 
     # now read the whole file in
     m = getattr(hashlib, hash_type)()
@@ -277,12 +283,14 @@ def main():
 
     # rename it its final name
     os.rename(tmpfile, dest_file)
-    os.chmod(dest_file, 0644)
+    os.chmod(dest_file, int('0644'))
 
-    print >> sys.stderr, '[username=%s] Stored %s (%d bytes)' % (username, dest_file, filesize)
-    print 'Content-Type: text/plain'
-    print
-    print 'File %s size %d CHECKSUM %s stored OK' % (filename, filesize, checksum)
+    stderr_message = '[username=%s] Stored %s (%d bytes)' % (username, dest_file, filesize)
+    sys.stderr.write(str(stderr_message))
+    print('Content-Type: text/plain')
+    print()
+    status_message = 'File %s size %s CHECKSUM %s stored OK' % (filename, filesize, checksum)
+    print(status_message)
     if conf.getboolean('mail', 'send_mail'):
         send_email(name, checksum, filename, username, branch=branch)
 
