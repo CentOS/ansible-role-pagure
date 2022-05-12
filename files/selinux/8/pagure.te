@@ -1,4 +1,4 @@
-module pagure 1.0.6;
+module pagure 1.0.7;
 
 require {
         type httpd_t;
@@ -7,8 +7,10 @@ require {
         type httpd_git_script_t;
         type git_script_tmp_t;
         type git_user_content_t;
+        type sshd_t;
+        type ldconfig_exec_t;
 	class dir { search getattr open read add_name remove_name write create rename};
-	class file { append open ioctl lock rename append getattr read create link setattr unlink write map };
+	class file { append open ioctl lock rename append getattr read create link setattr unlink write map execute };
         class lnk_file { read open getattr create unlink};
 }
 
@@ -28,3 +30,5 @@ allow httpd_t gitosis_var_lib_t:file { create link setattr unlink write rename a
 allow httpd_t gitosis_var_lib_t:lnk_file { create unlink };
 
 allow httpd_t sysctl_net_t:file { open read };
+allow sshd_t ldconfig_exec_t:file { execute read open };
+
