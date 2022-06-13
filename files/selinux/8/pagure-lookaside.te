@@ -1,5 +1,5 @@
 
-module pagure-lookaside 1.1.1;
+module pagure-lookaside 1.1.2;
 
 require {
 	type httpd_config_t;
@@ -10,7 +10,7 @@ require {
 	type httpd_sys_script_exec_t;
 	type krb5_keytab_t;
 	class dir { add_name create remove_name write search rmdir read };
-	class file { create rename setattr write };
+	class file { create rename setattr write lock open read};
 }
 
 #============= git_script_t ==============
@@ -19,4 +19,5 @@ allow git_script_t git_user_content_t:file { create rename setattr write };
 allow git_script_t httpd_config_t:dir search;
 allow git_script_t httpd_sys_script_exec_t:dir read;
 allow git_script_t krb5_keytab_t:dir search;
+allow git_script_t httpd_config_t:file { lock open read };
 allow httpd_t gitosis_var_lib_t:dir rmdir;
