@@ -114,6 +114,12 @@
             name: "{{ python_request_gssapi_pkg }}"
             state: installed
 
+        - name: "[workaround] Ensuring keyring instead of KCM for kerberos"
+          yum:
+            name: sssd-kcm
+            state: absent
+          notify: restart_httpd  
+            
         - name: Install FASJSON lookaside upload.cgi script
           copy:
             src: "{{ ansible_distribution_major_version }}/upload.cgi.fasjson"
