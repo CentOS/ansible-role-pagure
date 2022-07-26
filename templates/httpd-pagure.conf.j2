@@ -7,6 +7,7 @@ WSGIDaemonProcess pagure user=git group=git maximum-requests=1000 display-name=p
 WSGIApplicationGroup %{GLOBAL}
 
 WSGIScriptAlias / /usr/share/pagure/pagure.wsgi
+TimeOut {{ pagure_httpd_timeout }}
 
 {% if ansible_distribution_major_version == '7' %}
 Alias /static /usr/lib/python2.7/site-packages/pagure/static/

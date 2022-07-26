@@ -111,6 +111,8 @@ pagure_repospanner_cluster: False
 # Ensuring that httpd/pagure worker can open multiple files (to avoid "Too many open files")
 pagure_httpd_limit_nofile: 65536
 sysctl_fs_inotify_max_user_watches: '1524288'
+# httpd TimeOut setting (default '60' is too small for wsgi)
+pagure_httpd_timeout: 120
 
 # If we want repospanner integration, we need the instances details
 # see repospanner defaults
