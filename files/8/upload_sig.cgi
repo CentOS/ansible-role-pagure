@@ -234,7 +234,7 @@ def main():
     # check that all directories are in place
     if not os.path.isdir(module_dir):
         try:
-            os.makedirs(module_dir, mode=int('02775'))
+            os.makedirs(module_dir, mode=0o775)
         except:
             print('Status: 403 Forbidden')
             print('Content-type: text/plain')
