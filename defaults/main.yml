@@ -111,8 +111,14 @@ pagure_repospanner_cluster: False
 # Ensuring that httpd/pagure worker can open multiple files (to avoid "Too many open files")
 pagure_httpd_limit_nofile: 65536
 sysctl_fs_inotify_max_user_watches: '1524288'
+
 # httpd TimeOut setting (default '60' is too small for wsgi)
 pagure_httpd_timeout: 120
+# mod_wsgi settings, read https://modwsgi.readthedocs.io/en/master/configuration-directives/WSGIDaemonProcess.html
+# default to number of cores/vcpus but can be set through inventory
+pagure_httpd_wsgi_processes: "{{ ansible_processor_nproc }}"
+pagure_httpd_wsgi_threads: "{{ ansible_processor_nproc }}"
+pagure_httpd_wsgi_inactivity_timeout: 300
 
 # If we want repospanner integration, we need the instances details
 # see repospanner defaults

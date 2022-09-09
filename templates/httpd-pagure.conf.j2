@@ -3,7 +3,7 @@ WSGIRestrictStdout Off
 WSGIRestrictSignal Off
 WSGIPythonOptimize 1
 WSGIPassAuthorization On
-WSGIDaemonProcess pagure user=git group=git maximum-requests=1000 display-name=pagure processes=4 threads=4 inactivity-timeout=300
+WSGIDaemonProcess pagure user=git group=git maximum-requests=1000 display-name=pagure processes={{ pagure_httpd_wsgi_processes }} threads={{ pagure_httpd_wsgi_threads }} inactivity-timeout={{ pagure_httpd_wsgi_inactivity_timeout }}
 WSGIApplicationGroup %{GLOBAL}
 
 WSGIScriptAlias / /usr/share/pagure/pagure.wsgi
