@@ -136,6 +136,8 @@
   unarchive:
     src: "{{ pagure_centos_theme_file }}"
     dest: /
+    owner: root
+    group: root
   tags:
     - theme
 
