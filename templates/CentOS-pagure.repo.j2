@@ -1,13 +1,8 @@
-{% if ansible_distribution_major_version == '7' and not ansible_architecture == 'x86_64' %}
-{% set contentdir = 'altarch' %}
-{% else %}
-{% set contentdir = 'centos' %} 
-{% endif %}
 
 {% if centos_infra_env == 'prod' %}
 [centos-pagure]
-name=CentOS Infra stg Pagure repository
-baseurl=http://mirror.centos.org/{{ contentdir }}/$releasever/infra/$basearch/gitforge-pagure/
+name=CentOS Infra Pagure repository
+baseurl=http://mirror.stream.centos.org/SIGs/$releasever/infra/$basearch/gitforge-pagure/
 enabled=1
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Infra
