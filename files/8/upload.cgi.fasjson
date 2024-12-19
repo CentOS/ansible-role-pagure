@@ -264,7 +264,7 @@ def main():
 
     # rename it its final name
     os.rename(tmpfile, dest_file)
-    os.chmod(dest_file, int('0644'))
+    os.chmod(dest_file, 0o644)
 
     stderr_message = '[username=%s] Stored %s (%s bytes)' % (username, dest_file, filesize)
     sys.stderr.write(str(stderr_message))

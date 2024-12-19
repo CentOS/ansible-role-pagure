@@ -145,7 +145,6 @@
 
       when: lookaside_fasjson
 
-
     - name: install the lookaside configuration file 
       template:
         src: "lookaside.cfg.j2"
